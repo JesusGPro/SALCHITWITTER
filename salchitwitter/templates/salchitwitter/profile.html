@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="column">
+
+    <div class="block">
+    <h1 class="title is-1">
+        {{profile.user.username|upper}}'s Salchitweets
+    </h1>
+    </div>
+    <form method="post">
+        <!-- We need a form so thay we can submit data and handle it in the views-->
+        {% csrf_token %}
+        <div class="buttons has-addons">
+            <!-- with is static bulma will render in gray the irrelevant buttons-->
+            {% if profile in user.profile.follows.all %}
+            <!--Checks if the profile you are viewing  is in the query set of all profiles that the logged-in user follows-->
+            <button class="button is-success is-static">Follow</button>
+            <button class="button is-danger" name="follow" value="unfollow">Unfollow</button>
+            <!--name defines what key you'll use to access the value in your view form. You set this key to "follow" for buttons
+            value defines what value the form will send to your view function under the key name defined in name when you 
+            press one of the buttons. -->
+            {% else %}
+            <button class="button is-success" name="follow" value="follow">Follow</button>
+            <button class="button is-danger is-static">Unfollow</button>
+            {% endif %}
+        </div>
+    </form>
+
+    <div class="content">
+        {% for tweet in profile.user.salchitweet.all %}
+            <br>
+            <div class="box">
+                {{ tweet.body }}
+                <span class="is-small has-text-grey-light">
+                    ({{ tweet.created_at }})
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="column is-one-third">
+
+    <div class="block">
+        <a href="{% url 'salchitwitter:profile_list' %}">
+            <!--'salchitwitter:profile_list, defines the name of the App and the path name in the url.-->
+            <button class="button is-dark is-outlined is-fullwidth">
+                All Profiles
+            </button>
+        </a>
+    </div>
+
+    <div class="block">
+        <h3 class="title is-4">
+            {{profile.user.username}} follows:
+        </h3>
+        <div class="content">
+            <ul>
+            {% for following in profile.follows.all %}
+                <li>
+                    <a href="#">
+                        {{ following }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="block">
+        <h3 class="title is-4">
+            {{profile.user.username}} is followed by:
+        </h3>
+        <div class="content">
+            <ul>
+            {% for follower in profile.followed_by.all %}
+                <li>
+                    <a href="#">
+                        {{ follower }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
